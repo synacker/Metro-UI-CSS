@@ -13,9 +13,15 @@
 }(function( ) { 
 'use strict';
 
+// Source: source/m4q/m4q.js
+
 (function (global, undefined) {
 
+// Source: src/mode.js
+
 'use strict';
+
+// Source: src/func.js
 
 function isVisible(elem) {
     return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
@@ -77,6 +83,15 @@ function parseUnit(str, out) {
 }
 
 
+// Source: src/setimmediate.js
+
+/*
+ * setImmediate polyfill
+ * Version 1.0.5
+ * Url: https://github.com/YuzuJS/setImmediate
+ * Copyright (c) 2016 Yuzu (https://github.com/YuzuJS)
+ * Licensed under MIT
+ */
 (function (global, undefined) {
 
     if (global.setImmediate) {
@@ -171,6 +186,15 @@ function parseUnit(str, out) {
 
 }(window));
 
+// Source: src/promise.js
+
+/*
+ * Promise polyfill
+ * Version 1.2.0
+ * Url: https://github.com/lahmatiy/es6-promise-polyfill
+ * Copyright (c) 2014 Roman Dvornov
+ * Licensed under MIT
+ */
 (function (global, undefined) {
 
     if (global.Promise) {
@@ -472,7 +496,9 @@ function parseUnit(str, out) {
     }
 }(window));
 
-var m4qVersion = "v1.0.0. Built at 16/06/2019 12:36:32";
+// Source: src/core.js
+
+var m4qVersion = "v1.0.0. Built at 18/06/2019 11:54:09";
 var regexpSingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
 
 var matches = Element.prototype.matches
@@ -526,6 +552,8 @@ $.extend = $.fn.extend = function(){
     return target;
 };
 
+
+// Source: src/interval.js
 
 var now = function(){
     return Date.now();
@@ -594,6 +622,8 @@ $.extend({
         return this.clearInterval(id);
     }
 });
+
+// Source: src/contains.js
 
 $.fn.extend({
     index: function(sel){
@@ -947,6 +977,8 @@ $.fn.extend({
 
 });
 
+// Source: src/prop.js
+
 $.fn.extend({
     _prop: function(prop, value){
         if (this.length === 0) {
@@ -990,6 +1022,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/each.js
+
 $.each = function(ctx, cb){
     var index = 0;
     if (isArrayLike(ctx)) {
@@ -1012,6 +1046,8 @@ $.fn.extend({
     }
 });
 
+
+// Source: src/data.js
 
 function acceptData(owner){
     return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
@@ -1235,6 +1271,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/utils.js
+
 $.extend({
     uniqueId: function () {
         var d = new Date().getTime();
@@ -1322,6 +1360,8 @@ $.fn.extend({
         return $.toArray(this);
     }
 });
+
+// Source: src/events.js
 
 (function () {
     if ( typeof window.CustomEvent === "function" ) return false;
@@ -1669,6 +1709,8 @@ $.fn.extend({
 });
 
 
+// Source: src/html.js
+
 $.fn.extend({
     html: function(value){
         var that = this, v = [];
@@ -1711,6 +1753,8 @@ $.fn.extend({
 
 
 
+// Source: src/val.js
+
 $.fn.extend({
     val: function(value){
         if (this.length === 0) return ;
@@ -1726,6 +1770,8 @@ $.fn.extend({
         });
     }
 });
+
+// Source: src/ajax.js
 
 $.ajax = function(p){
     return new Promise(function(resolve, reject){
@@ -1840,6 +1886,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/css.js
+
 //var nonDigit = /[^0-9.\-]/;
 var numProps = ['opacity', 'zIndex'];
 
@@ -1934,6 +1982,8 @@ $.fn.extend({
 
 
 
+// Source: src/classes.js
+
 $.fn.extend({
     addClass: function(){},
     removeClass: function(){},
@@ -1977,6 +2027,8 @@ $.fn.extend({
 });
 
 
+// Source: src/parser.js
+
 $.parseHTML = function(data, context){
     var base, singleTag, result = [], ctx, _context;
 
@@ -2016,6 +2068,8 @@ $.parseHTML = function(data, context){
     return result;
 };
 
+
+// Source: src/size.js
 
 $.fn.extend({
     _size: function(prop, val){
@@ -2120,6 +2174,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/position.js
+
 $.fn.extend({
     offset: function(val){
         var rect;
@@ -2210,6 +2266,8 @@ $.fn.extend({
         }
     }
 });
+
+// Source: src/attr.js
 
 $.fn.extend({
     attr: function(name, val){
@@ -2317,6 +2375,8 @@ $.extend({
     }
 });
 
+// Source: src/proxy.js
+
 $.extend({
     proxy: function(fn, context){
         if (typeof fn !== "function") {
@@ -2329,6 +2389,8 @@ $.extend({
     }
 });
 
+
+// Source: src/manipulation.js
 
 (function (arr) {
     arr.forEach(function (item) {
@@ -2532,6 +2594,8 @@ $.fn.extend({
         return $.merge($(), res);
     }
 });
+
+// Source: src/animation.js
 
 var cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame;
 
@@ -2927,6 +2991,8 @@ $.fn.extend({
 
 
 
+// Source: src/visibility.js
+
 $.extend({
     hide: function(el, cb){
         var $el = $(el);
@@ -3023,6 +3089,8 @@ $.fn.extend({
 });
 
 
+
+// Source: src/effects.js
 
 $.extend({
     fx: {
@@ -3197,6 +3265,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/init.js
+
 $.init = function(sel, ctx){
     var parsed;
 
@@ -3277,36 +3347,40 @@ $.init = function(sel, ctx){
 $.init.prototype = $.fn;
 
 
-var _$ = window.$,
-    _m4q = window.m4q;
+// Source: src/populate.js
+
+var _$ = global.$,
+    _m4q = global.m4q;
 
 $.Promise = Promise;
 
-window.m4q = $;
+global.m4q = $;
 
-if (typeof window.$ === "undefined") {
-    window.$ = $;
+if (typeof global.$ === "undefined") {
+    global.$ = $;
 }
 
 m4q.global = function(){
-    _$ = window.$;
-    _m4q = window.m4q;
-    window.$ = $;
+    _$ = global.$;
+    _m4q = global.m4q;
+    global.$ = $;
 };
 
 m4q.noConflict = function(deep) {
-    if ( window.$ === $ ) {
-        window.$ = _$;
+    if ( global.$ === $ ) {
+        global.$ = _$;
     }
 
-    if (deep && window.m4q === $) {
-        window.m4q = _m4q;
+    if (deep && global.m4q === $) {
+        global.m4q = _m4q;
     }
 
     return $;
 };
 }(window));
 
+
+// Source: source/metro.js
 
 var $ = m4q;
 
@@ -3411,7 +3485,7 @@ var isTouch = (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (
 var Metro = {
 
     version: "4.3.0",
-    compileTime: "18/06/2019 11:45:10",
+    compileTime: "18/06/2019 11:56:29",
     buildNumber: "726",
     isTouchable: isTouch,
     fullScreenEnabled: document.fullscreenEnabled,
@@ -3887,6 +3961,8 @@ $(window).on(Metro.events.resize, function(){
 
 
 
+// Source: source/common/js/animation.js
+
 var Animation = {
 
     duration: METRO_ANIMATION_DURATION,
@@ -3991,6 +4067,8 @@ var Animation = {
 
 Metro['animation'] = Animation;
 
+// Source: source/common/js/array-ext.js
+
 if (typeof Array.shuffle !== "function") {
     Array.prototype.shuffle = function () {
         var currentIndex = this.length, temporaryValue, randomIndex;
@@ -4054,6 +4132,8 @@ if (typeof Array.contains !== "function") {
     }
 }
 
+
+// Source: source/common/js/colors.js
 
 function RGB(r, g, b){
     this.r = r || 0;
@@ -4925,6 +5005,8 @@ var Colors = {
 
 Metro['colors'] = Colors.init();
 
+// Source: source/common/js/date-ext.js
+
 Date.prototype.getWeek = function (dowOffset) {
     var nYear, nday, newYear, day, daynum, weeknum;
 
@@ -5055,6 +5137,8 @@ Date.prototype.addYears = function(n) {
 };
 
 
+// Source: source/common/js/export.js
+
 var Export = {
 
     init: function(){
@@ -5165,6 +5249,8 @@ var Export = {
 
 Metro['export'] = Export.init();
 
+
+// Source: source/common/js/i18n.js
 
 var Locales = {
     'en-US': {
@@ -5492,6 +5578,8 @@ var Locales = {
 
 Metro['locales'] = Locales;
 
+
+// Source: source/common/js/md5.js
 
 var hexcase = 0;
 /* hex output format. 0 - lowercase; 1 - uppercase        */
@@ -5841,6 +5929,16 @@ function bit_rol(num, cnt) {
 
 //$.Metro['md5'] = hex_md5;
 
+// Source: source/common/js/number-ext.js
+
+/**
+ * Number.prototype.format(n, x, s, c)
+ *
+ * @param  n: length of decimal
+ * @param  x: length of whole part
+ * @param  s: sections delimiter
+ * @param  c: decimal delimiter
+ */
 Number.prototype.format = function(n, x, s, c) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
         num = this.toFixed(Math.max(0, ~~n));
@@ -5848,6 +5946,8 @@ Number.prototype.format = function(n, x, s, c) {
     return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
 };
 
+
+// Source: source/common/js/string-ext.js
 
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
@@ -5978,6 +6078,8 @@ String.prototype.toArray = function(delimiter, type, format){
 };
 
 
+// Source: source/common/js/tpl.js
+
 var TemplateEngine = function(html, options, conf) {
     var ReEx, re = '<%(.+?)%>',
         reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g,
@@ -6017,6 +6119,8 @@ var TemplateEngine = function(html, options, conf) {
 
 Metro['template'] = TemplateEngine;
 
+
+// Source: source/common/js/utilities.js
 
 var Utils = {
     isUrl: function (val) {
@@ -6919,6 +7023,8 @@ var Utils = {
 
 Metro['utils'] = Utils;
 
+// Source: source/components/accordion/accordion.js
+
 var AccordionDefaultConfig = {
     showMarker: true,
     material: false,
@@ -7121,6 +7227,8 @@ var Accordion = {
 
 Metro.plugin('accordion', Accordion);
 
+// Source: source/components/activity/activity.js
+
 var ActivityDefaultConfig = {
     type: "ring",
     style: "light",
@@ -7249,6 +7357,8 @@ Metro['activity'] = {
         Metro.dialog.close(a);
     }
 };
+
+// Source: source/components/app-bar/app-bar.js
 
 var AppBarDefaultConfig = {
     expand: false,
@@ -7426,6 +7536,8 @@ var AppBar = {
 };
 
 Metro.plugin('appbar', AppBar);
+
+// Source: source/components/audio-player/audio.js
 
 var AudioDefaultConfig = {
     playlist: null,
@@ -7903,6 +8015,8 @@ var Audio = {
 
 Metro.plugin('audio', Audio);
 
+// Source: source/components/bottom-sheet/bottom-sheet.js
+
 var BottomSheetDefaultConfig = {
     mode: "list",
     toggle: null,
@@ -8064,6 +8178,8 @@ Metro['bottomsheet'] = {
     }
 };
 
+// Source: source/components/button-group/button-group.js
+
 var ButtonGroupDefaultConfig = {
     targets: "button",
     clsActive: "active",
@@ -8181,6 +8297,8 @@ var ButtonGroup = {
 };
 
 Metro.plugin('buttongroup', ButtonGroup);
+
+// Source: source/components/calendar/calendar.js
 
 var CalendarDefaultConfig = {
     dayBorder: false,
@@ -9160,6 +9278,8 @@ $(document).on(Metro.events.click, function(e){
 
 Metro.plugin('calendar', Calendar);
 
+// Source: source/components/calendarpicker/calendarpicker.js
+
 var CalendarPickerDefaultConfig = {
     nullValue: true,
     useNow: false,
@@ -9618,6 +9738,8 @@ $(document).on(Metro.events.click, function(){
     $(".calendar-picker .calendar").removeClass("open open-up");
 });
 
+
+// Source: source/components/carousel/carousel.js
 
 var CarouselDefaultConfig = {
     autoStart: false,
@@ -10155,6 +10277,8 @@ var Carousel = {
 
 Metro.plugin('carousel', Carousel);
 
+// Source: source/components/charms/charms.js
+
 var CharmsDefaultConfig = {
     position: "right",
     opacity: 1,
@@ -10361,6 +10485,8 @@ Metro['charms'] = {
         charms.opacity(opacity);
     }
 };
+
+// Source: source/components/chat/chat.js
 
 var defaultAvatar = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2NjIpLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAUABQAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+t+KKPxo/GgA70Yo/Gj8aADFH4VesdC1HUl3WtjcXCf344yV/PGKW+0HUtNXddWNzbp/fkjIX88YoAofhR+FH40fjQAfhR+FH40fjQAUUUUAFepeAPh5D9li1LVYhK8g3Q27j5VXszDuT6f5HA+FtOXVvEWn2rjMcko3j1UckfkDX0MBgYHAoARVCKFUBVHAA6ClZQwKkZBGCDS0UAec+Pvh3BJay6lpUQimjBeW3QYVx3Kjsfbv/PyqvpuvnvxfpqaT4l1C1QbY0lJUDsrfMB+RoAyKKKKACiiigDa8GXq6f4p02eQgIJQpJ7Bvlz+tfQP4V8yDg17P4A8cw65ZxWV5IE1KMbfmP+uA7j39R+NAHaUfhSUUAL+FeA+OL1NQ8WalNGQU83YCO+0Bf6V6b498cQ6BZyWlrIJNSkXaApz5QP8AEff0FeKk5OTyTQAUUUUAH40fjRU1naTX93DbQIXmlYIijuTQBc0Dw/eeI74W1mm49XkbhUHqTXsHhz4eaXoCpI8YvbscmaYZAP8Asr0H8/etHwv4cg8M6XHaxANIfmllxy7dz9PStigA/Gk/GlooA5bxJ8PdL19XkWMWd43PnwjGT/tL0P8AP3rx/X/D954cvjbXibT1SReVceoNfRFZHijw5B4m0uS1lAWQfNFLjlG7H6etAHz5+NH41NeWk1hdzW06FJonKMp7EGoaACvQfhBowudTudRkXK2y7I8j+Nup/Afzrz6vafhRaCDwmkgHM8zufwO3/wBloA7Kiij8KACkpaSgBaSj8KKAPJvi/owttTttRjXC3K7JMf3l6H8R/KvPq9p+K1qJ/CbyEcwTI4P1O3/2avFqAP/Z";
 
@@ -10646,6 +10772,8 @@ var Chat = {
 
 Metro.plugin('chat', Chat);
 
+// Source: source/components/checkbox/checkbox.js
+
 var CheckboxDefaultConfig = {
     transition: true,
     style: 1,
@@ -10803,6 +10931,8 @@ var Checkbox = {
 
 Metro.plugin('checkbox', Checkbox);
 
+// Source: source/components/clock/clock.js
+
 var ClockDefaultConfig = {
     showTime: true,
     showDate: true,
@@ -10937,6 +11067,8 @@ var Clock = {
 };
 
 Metro.plugin('clock', Clock);
+
+// Source: source/components/collapse/collapse.js
 
 var CollapseDefaultConfig = {
     collapsed: false,
@@ -11090,6 +11222,8 @@ var Collapse = {
 };
 
 Metro.plugin('collapse', Collapse);
+
+// Source: source/components/countdown/countdown.js
 
 var CountdownDefaultConfig = {
     stopOnBlur: true,
@@ -11625,6 +11759,8 @@ var Countdown = {
 
 Metro.plugin('countdown', Countdown);
 
+// Source: source/components/counter/counter.js
+
 var CounterDefaultConfig = {
     delay: 10,
     step: 1,
@@ -11748,6 +11884,8 @@ var Counter = {
 };
 
 Metro.plugin('counter', Counter);
+
+// Source: source/components/cube/cube.js
 
 var CubeDefaultConfig = {
     rules: null,
@@ -12223,6 +12361,8 @@ var Cube = {
 
 Metro.plugin('cube', Cube);
 
+// Source: source/components/datepicker/datepicker.js
+
 var DatePickerDefaultConfig = {
     gmt: 0,
     format: "%Y-%m-%d",
@@ -12670,6 +12810,8 @@ $(document).on(Metro.events.click, function(){
     });
 });
 
+// Source: source/components/dialog/dialog.js
+
 var DialogDefaultConfig = {
     closeButton: false,
     leaveOverlayOnClose: false,
@@ -13070,6 +13212,8 @@ Metro['dialog'] = {
     }
 };
 
+// Source: source/components/donut/donut.js
+
 var DonutDefaultConfig = {
     size: 100,
     radius: 50,
@@ -13230,6 +13374,12 @@ var Donut = {
 };
 
 Metro.plugin('donut', Donut);
+
+// Source: source/components/draggable/drag-items.js
+
+
+
+// Source: source/components/draggable/draggable.js
 
 var DraggableDefaultConfig = {
     dragElement: 'self',
@@ -13408,6 +13558,8 @@ var Draggable = {
 };
 
 Metro.plugin('draggable', Draggable);
+
+// Source: source/components/dropdown/dropdown.js
 
 var DropdownDefaultConfig = {
     dropFilter: null,
@@ -13617,6 +13769,8 @@ $(document).on(Metro.events.click, function(){
 });
 
 Metro.plugin('dropdown', Dropdown);
+
+// Source: source/components/file/file.js
 
 var FileDefaultConfig = {
     mode: "input",
@@ -13837,6 +13991,8 @@ var File = {
 
 Metro.plugin('file', File);
 
+// Source: source/components/gravatar/gravatar.js
+
 var GravatarDefaultConfig = {
     email: "",
     size: 80,
@@ -13939,6 +14095,8 @@ var Gravatar = {
 };
 
 Metro.plugin('gravatar', Gravatar);
+
+// Source: source/components/hint/hint.js
 
 var HintDefaultConfig = {
     hintHide: 5000,
@@ -14112,6 +14270,8 @@ var Hint = {
 
 Metro.plugin('hint', Hint);
 
+// Source: source/components/hotkey/hotkey.js
+
 var Hotkey = {
     specialKeys: {
         8: "backspace", 9: "tab", 13: "return", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause",
@@ -14194,6 +14354,8 @@ $(document).on(Metro.events.keyup + ".hotkey-data", function(e){
     }
 });
 
+
+// Source: source/components/html-container/html-container.js
 
 // TODO source as array, mode as array
 
@@ -14358,6 +14520,8 @@ var HtmlContainer = {
 };
 
 Metro.plugin('htmlcontainer', HtmlContainer);
+
+// Source: source/components/image-comparer/image-comparer.js
 
 var ImageCompareDefaultConfig = {
     width: "100%",
@@ -14552,6 +14716,8 @@ var ImageCompare = {
 };
 
 Metro.plugin('imagecompare', ImageCompare);
+
+// Source: source/components/image-magnifier/image-magnifier.js
 
 var ImageMagnifierDefaultConfig = {
     width: "100%",
@@ -14800,6 +14966,8 @@ var ImageMagnifier = {
 };
 
 Metro.plugin('imagemagnifier', ImageMagnifier);
+
+// Source: source/components/info-box/info-box.js
 
 var InfoBoxDefaultConfig = {
     type: "",
@@ -15113,6 +15281,8 @@ Metro['infobox'] = {
     }
 };
 
+// Source: source/components/input-material/input-material.js
+
 var MaterialInputDefaultConfig = {
     label: "",
     informer: "",
@@ -15259,6 +15429,8 @@ var MaterialInput = {
 };
 
 Metro.plugin('materialinput', MaterialInput);
+
+// Source: source/components/input/input.js
 
 var InputDefaultConfig = {
     autocomplete: null,
@@ -15724,6 +15896,8 @@ $(document).on(Metro.events.click, function(e){
 });
 
 
+// Source: source/components/keypad/keypad.js
+
 var KeypadDefaultConfig = {
     keySize: 48,
     keys: "1, 2, 3, 4, 5, 6, 7, 8, 9, 0",
@@ -16121,6 +16295,8 @@ $(document).on(Metro.events.click, function(){
     });
 });
 
+
+// Source: source/components/list/list.js
 
 var ListDefaultConfig = {
     templateBeginToken: "<%",
@@ -16980,6 +17156,8 @@ var List = {
 
 Metro.plugin('list', List);
 
+// Source: source/components/listview/listview.js
+
 var ListViewDefaultConfig = {
     selectable: false,
     checkStyle: 1,
@@ -17414,6 +17592,8 @@ var ListView = {
 
 Metro.plugin('listview', ListView);
 
+// Source: source/components/master/master.js
+
 var MasterDefaultConfig = {
     effect: "slide", // slide, fade, switch, slowdown, custom
     effectFunc: "linear",
@@ -17786,6 +17966,8 @@ var Master = {
 
 Metro.plugin('master', Master);
 
+// Source: source/components/navview/navview.js
+
 var NavigationViewDefaultConfig = {
     compact: "md",
     expand: "lg",
@@ -18003,6 +18185,8 @@ var NavigationView = {
 
 Metro.plugin('navview', NavigationView);
 
+// Source: source/components/notify/notify.js
+
 var NotifyDefaultConfig = {
     container: null,
     width: 220,
@@ -18165,6 +18349,8 @@ var Notify = {
 
 Metro['notify'] = Notify.setup();
 
+// Source: source/components/pagination/pagination.js
+
 var createPagination = function(c){
     var defConf = {
         length: 0,
@@ -18268,6 +18454,8 @@ var createPagination = function(c){
 };
 
 Metro['pagination'] = createPagination;
+
+// Source: source/components/panel/panel.js
 
 var PanelDefaultConfig = {
     id: null,
@@ -18494,6 +18682,8 @@ var Panel = {
 };
 
 Metro.plugin('panel', Panel);
+
+// Source: source/components/popover/popover.js
 
 var PopoverDefaultConfig = {
     popoverText: "",
@@ -18763,6 +18953,8 @@ var Popover = {
 
 Metro.plugin('popover', Popover);
 
+// Source: source/components/progress/progress.js
+
 var ProgressDefaultConfig = {
     value: 0,
     buffer: 0,
@@ -18941,6 +19133,8 @@ var Progress = {
 
 Metro.plugin('progress', Progress);
 
+// Source: source/components/radio/radio.js
+
 var RadioDefaultConfig = {
     transition: true,
     style: 1,
@@ -19074,6 +19268,8 @@ var Radio = {
 };
 
 Metro.plugin('radio', Radio);
+
+// Source: source/components/rating/rating.js
 
 var RatingDefaultConfig = {
     static: false,
@@ -19368,6 +19564,8 @@ var Rating = {
 
 Metro.plugin('rating', Rating);
 
+// Source: source/components/resizeable/resizable.js
+
 var ResizableDefaultConfig = {
     canResize: true,
     resizeElement: ".resize-element",
@@ -19523,6 +19721,8 @@ var Resizable = {
 
 Metro.plugin('resizable', Resizable);
 
+// Source: source/components/ribbon-menu/ribbon-menu.js
+
 var RibbonMenuDefaultConfig = {
     onStatic: Metro.noop,
     onBeforeTab: Metro.noop_true,
@@ -19662,6 +19862,8 @@ var RibbonMenu = {
 
 Metro.plugin('ribbonmenu', RibbonMenu);
 
+// Source: source/components/ripple/ripple.js
+
 var RippleDefaultConfig = {
     rippleColor: "#fff",
     rippleAlpha: .4,
@@ -19760,6 +19962,8 @@ var Ripple = {
 };
 
 Metro.plugin('ripple', Ripple);
+
+// Source: source/components/select/select.js
 
 var SelectDefaultConfig = {
     duration: 100,
@@ -20299,6 +20503,8 @@ Metro.plugin('select', Select);
 
 
 
+// Source: source/components/sidebar/sidebar.js
+
 var SidebarDefaultConfig = {
     shadow: true,
     position: "left",
@@ -20553,6 +20759,8 @@ Metro['sidebar'] = {
         return $(el).data("sidebar").isOpen();
     }
 };
+
+// Source: source/components/slider/slider.js
 
 var SliderDefaultConfig = {
     min: 0,
@@ -21112,6 +21320,8 @@ var Slider = {
 
 Metro.plugin('slider', Slider);
 
+// Source: source/components/sorter/sorter.js
+
 var SorterDefaultConfig = {
     thousandSeparator: ",",
     decimalSeparator: ",",
@@ -21370,6 +21580,8 @@ Metro['sorter'] = {
         sorter.reset();
     }
 };
+
+// Source: source/components/spinner/spinner.js
 
 var SpinnerDefaultConfig = {
     step: 1,
@@ -21657,6 +21869,8 @@ $(document).on(Metro.events.click, function(){
 
 
 
+// Source: source/components/splitter/splitter.js
+
 var SplitterDefaultConfig = {
     splitMode: "horizontal", // horizontal or vertical
     splitSizes: null,
@@ -21885,6 +22099,8 @@ var Splitter = {
 
 Metro.plugin('splitter', Splitter);
 
+// Source: source/components/stepper/stepper.js
+
 var StepperDefaultConfig = {
     view: Metro.stepperView.SQUARE, // square, cycle, diamond
     steps: 3,
@@ -22043,6 +22259,8 @@ var Stepper = {
 
 Metro.plugin('stepper', Stepper);
 
+// Source: source/components/storage/storage.js
+
 var Storage = function(type){
     return new Storage.init(type);
 };
@@ -22120,6 +22338,8 @@ Storage.init.prototype = Storage.prototype;
 Metro['storage'] = Storage(window.localStorage);
 Metro['session'] = Storage(window.sessionStorage);
 
+
+// Source: source/components/streamer/streamer.js
 
 var StreamerDefaultConfig = {
     wheel: false,
@@ -22867,6 +23087,8 @@ var Streamer = {
 
 Metro.plugin('streamer', Streamer);
 
+// Source: source/components/switch/switch.js
+
 var SwitchDefaultConfig = {
     material: false,
     transition: true,
@@ -22975,6 +23197,8 @@ var Switch = {
 };
 
 Metro.plugin('switch', Switch);
+
+// Source: source/components/table/table.js
 
 var TableDefaultConfig = {
     templateBeginToken: "<%",
@@ -24985,6 +25209,8 @@ var Table = {
 
 Metro.plugin('table', Table);
 
+// Source: source/components/tabs-material/tabs-material.js
+
 var MaterialTabsDefaultConfig = {
     deep: false,
     fixedTabs: false,
@@ -25180,6 +25406,8 @@ var MaterialTabs = {
 };
 
 Metro.plugin('materialtabs', MaterialTabs);
+
+// Source: source/components/tabs/tabs.js
 
 var TabsDefaultConfig = {
     expand: false,
@@ -25461,6 +25689,8 @@ var Tabs = {
 };
 
 Metro.plugin('tabs', Tabs);
+
+// Source: source/components/tag-input/tag-input.js
 
 var TagInputDefaultConfig = {
     randomColor: false,
@@ -25770,6 +26000,8 @@ var TagInput = {
 
 Metro.plugin('taginput', TagInput);
 
+// Source: source/components/textarea/textarea.js
+
 var TextareaDefaultConfig = {
     charsCounter: null,
     charsCounterTemplate: "$1",
@@ -25985,6 +26217,8 @@ var Textarea = {
 };
 
 Metro.plugin('textarea', Textarea);
+
+// Source: source/components/tiles/tiles.js
 
 var TileDefaultConfig = {
     size: "medium",
@@ -26239,6 +26473,8 @@ var Tile = {
 };
 
 Metro.plugin('tile', Tile);
+
+// Source: source/components/timepicker/timepicker.js
 
 var TimePickerDefaultConfig = {
     hoursStep: 1,
@@ -26740,6 +26976,8 @@ $(document).on(Metro.events.click, function(){
 });
 
 
+// Source: source/components/toast/toast.js
+
 var Toast = {
 
     options: {
@@ -26789,6 +27027,8 @@ var Toast = {
 };
 
 Metro['toast'] = Toast;
+
+// Source: source/components/touch/touch.js
 
 var TouchConst = {
     LEFT : "left",
@@ -27956,6 +28196,8 @@ var Touch = {
 Metro['touch'] = TouchConst;
 Metro.plugin('touch', Touch);
 
+// Source: source/components/treeview/treeview.js
+
 var TreeViewDefaultConfig = {
     duration: 100,
     onNodeClick: Metro.noop,
@@ -28354,6 +28596,8 @@ var TreeView = {
 };
 
 Metro.plugin('treeview', TreeView);
+
+// Source: source/components/validator/validator.js
 
 var ValidatorFuncs = {
     required: function(val){
@@ -28806,6 +29050,8 @@ var Validator = {
 };
 
 Metro.plugin('validator', Validator);
+
+// Source: source/components/video-player/video.js
 
 var VideoDefaultConfig = {
     src: null,
@@ -29389,6 +29635,8 @@ var Video = {
 };
 
 Metro.plugin('video', Video);
+
+// Source: source/components/window/window.js
 
 var WindowDefaultConfig = {
     hidden: false,
@@ -30108,6 +30356,8 @@ Metro['window'] = {
         return w.window(w_options);
     }
 };
+
+// Source: source/components/wizard/wizard.js
 
 var WizardDefaultConfig = {
     start: 1,

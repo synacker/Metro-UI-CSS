@@ -1,6 +1,10 @@
 (function (global, undefined) {
 
+// Source: src/mode.js
+
 'use strict';
+
+// Source: src/func.js
 
 function isVisible(elem) {
     return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
@@ -62,6 +66,15 @@ function parseUnit(str, out) {
 }
 
 
+// Source: src/setimmediate.js
+
+/*
+ * setImmediate polyfill
+ * Version 1.0.5
+ * Url: https://github.com/YuzuJS/setImmediate
+ * Copyright (c) 2016 Yuzu (https://github.com/YuzuJS)
+ * Licensed under MIT
+ */
 (function (global, undefined) {
 
     if (global.setImmediate) {
@@ -156,6 +169,15 @@ function parseUnit(str, out) {
 
 }(window));
 
+// Source: src/promise.js
+
+/*
+ * Promise polyfill
+ * Version 1.2.0
+ * Url: https://github.com/lahmatiy/es6-promise-polyfill
+ * Copyright (c) 2014 Roman Dvornov
+ * Licensed under MIT
+ */
 (function (global, undefined) {
 
     if (global.Promise) {
@@ -457,7 +479,9 @@ function parseUnit(str, out) {
     }
 }(window));
 
-var m4qVersion = "v1.0.0. Built at 16/06/2019 12:36:32";
+// Source: src/core.js
+
+var m4qVersion = "v1.0.0. Built at 18/06/2019 11:54:09";
 var regexpSingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
 
 var matches = Element.prototype.matches
@@ -511,6 +535,8 @@ $.extend = $.fn.extend = function(){
     return target;
 };
 
+
+// Source: src/interval.js
 
 var now = function(){
     return Date.now();
@@ -579,6 +605,8 @@ $.extend({
         return this.clearInterval(id);
     }
 });
+
+// Source: src/contains.js
 
 $.fn.extend({
     index: function(sel){
@@ -932,6 +960,8 @@ $.fn.extend({
 
 });
 
+// Source: src/prop.js
+
 $.fn.extend({
     _prop: function(prop, value){
         if (this.length === 0) {
@@ -975,6 +1005,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/each.js
+
 $.each = function(ctx, cb){
     var index = 0;
     if (isArrayLike(ctx)) {
@@ -997,6 +1029,8 @@ $.fn.extend({
     }
 });
 
+
+// Source: src/data.js
 
 function acceptData(owner){
     return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
@@ -1220,6 +1254,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/utils.js
+
 $.extend({
     uniqueId: function () {
         var d = new Date().getTime();
@@ -1307,6 +1343,8 @@ $.fn.extend({
         return $.toArray(this);
     }
 });
+
+// Source: src/events.js
 
 (function () {
     if ( typeof window.CustomEvent === "function" ) return false;
@@ -1654,6 +1692,8 @@ $.fn.extend({
 });
 
 
+// Source: src/html.js
+
 $.fn.extend({
     html: function(value){
         var that = this, v = [];
@@ -1696,6 +1736,8 @@ $.fn.extend({
 
 
 
+// Source: src/val.js
+
 $.fn.extend({
     val: function(value){
         if (this.length === 0) return ;
@@ -1711,6 +1753,8 @@ $.fn.extend({
         });
     }
 });
+
+// Source: src/ajax.js
 
 $.ajax = function(p){
     return new Promise(function(resolve, reject){
@@ -1825,6 +1869,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/css.js
+
 //var nonDigit = /[^0-9.\-]/;
 var numProps = ['opacity', 'zIndex'];
 
@@ -1919,6 +1965,8 @@ $.fn.extend({
 
 
 
+// Source: src/classes.js
+
 $.fn.extend({
     addClass: function(){},
     removeClass: function(){},
@@ -1962,6 +2010,8 @@ $.fn.extend({
 });
 
 
+// Source: src/parser.js
+
 $.parseHTML = function(data, context){
     var base, singleTag, result = [], ctx, _context;
 
@@ -2001,6 +2051,8 @@ $.parseHTML = function(data, context){
     return result;
 };
 
+
+// Source: src/size.js
 
 $.fn.extend({
     _size: function(prop, val){
@@ -2105,6 +2157,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/position.js
+
 $.fn.extend({
     offset: function(val){
         var rect;
@@ -2195,6 +2249,8 @@ $.fn.extend({
         }
     }
 });
+
+// Source: src/attr.js
 
 $.fn.extend({
     attr: function(name, val){
@@ -2302,6 +2358,8 @@ $.extend({
     }
 });
 
+// Source: src/proxy.js
+
 $.extend({
     proxy: function(fn, context){
         if (typeof fn !== "function") {
@@ -2314,6 +2372,8 @@ $.extend({
     }
 });
 
+
+// Source: src/manipulation.js
 
 (function (arr) {
     arr.forEach(function (item) {
@@ -2517,6 +2577,8 @@ $.fn.extend({
         return $.merge($(), res);
     }
 });
+
+// Source: src/animation.js
 
 var cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame;
 
@@ -2912,6 +2974,8 @@ $.fn.extend({
 
 
 
+// Source: src/visibility.js
+
 $.extend({
     hide: function(el, cb){
         var $el = $(el);
@@ -3008,6 +3072,8 @@ $.fn.extend({
 });
 
 
+
+// Source: src/effects.js
 
 $.extend({
     fx: {
@@ -3182,6 +3248,8 @@ $.fn.extend({
     }
 });
 
+// Source: src/init.js
+
 $.init = function(sel, ctx){
     var parsed;
 
@@ -3262,30 +3330,32 @@ $.init = function(sel, ctx){
 $.init.prototype = $.fn;
 
 
-var _$ = window.$,
-    _m4q = window.m4q;
+// Source: src/populate.js
+
+var _$ = global.$,
+    _m4q = global.m4q;
 
 $.Promise = Promise;
 
-window.m4q = $;
+global.m4q = $;
 
-if (typeof window.$ === "undefined") {
-    window.$ = $;
+if (typeof global.$ === "undefined") {
+    global.$ = $;
 }
 
 m4q.global = function(){
-    _$ = window.$;
-    _m4q = window.m4q;
-    window.$ = $;
+    _$ = global.$;
+    _m4q = global.m4q;
+    global.$ = $;
 };
 
 m4q.noConflict = function(deep) {
-    if ( window.$ === $ ) {
-        window.$ = _$;
+    if ( global.$ === $ ) {
+        global.$ = _$;
     }
 
-    if (deep && window.m4q === $) {
-        window.m4q = _m4q;
+    if (deep && global.m4q === $) {
+        global.m4q = _m4q;
     }
 
     return $;

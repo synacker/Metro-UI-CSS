@@ -58,7 +58,10 @@ module.exports = function(grunt) {
                     banner: '<%= banner %>' + '<%= requirejs_banner%>',
                     footer: "\n\nreturn METRO_INIT === true ? Metro.init() : Metro;\n\n}));",
                     stripBanners: true,
-                    separator: "\n\n"
+                    separator: "\n\n",
+                    process: function(src, filePath){
+                        return '// Source: ' + filePath + '\n\n' + src;
+                    }
                 },
                 src: [
                     'source/m4q/*.js',
@@ -73,8 +76,8 @@ module.exports = function(grunt) {
                     stripBanners: true,
                     separator: "\n\n",
                     banner: '<%= banner %>',
-                    process: function(src) {
-                        return src.replace(/\n/g, '\n');
+                    process: function(src, filePath){
+                        return '// Source: ' + filePath + '\n\n' + src;
                     }
                 },
                 src: [
