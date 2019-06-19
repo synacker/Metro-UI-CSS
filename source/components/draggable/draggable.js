@@ -12,8 +12,8 @@ Metro.draggableSetup = function (options) {
     DraggableDefaultConfig = $.extend({}, DraggableDefaultConfig, options);
 };
 
-if (typeof window.metroDraggableSetup !== undefined) {
-    Metro.draggableSetup(window.metroDraggableSetup);
+if (typeof window["metroDraggableSetup"] !== undefined) {
+    Metro.draggableSetup(window["metroDraggableSetup"]);
 }
 
 var Draggable = {
@@ -28,6 +28,8 @@ var Draggable = {
             zIndex: '0'
         };
         this.dragArea = null;
+        this.onselectstart = null;
+        this.ondragstart = null;
 
         this._setOptionsFromDOM();
         this._create();
@@ -60,8 +62,6 @@ var Draggable = {
             y: 0
         };
         var dragElement  = o.dragElement !== 'self' ? element.find(o.dragElement) : element;
-
-        dragElement[0].ondragstart = function(){return false;};
 
         element.css("position", "absolute");
 
@@ -106,6 +106,10 @@ var Draggable = {
                 });
             };
 
+            that.onselectstart = document.body.onselectstart;
+            that.ondragstart = document.ondragstart;
+            document.body.onselectstart = Metro.noop_false;
+            document.body.ondragstart = Metro.noop_false;
 
             if (element.data("canDrag") === false || Utils.exec(o.onCanDrag, [element]) !== true) {
                 return ;
@@ -136,10 +140,10 @@ var Draggable = {
                 element.fire("dragmove", {
                     position: position
                 });
-                //e.preventDefault();
             });
 
             $(document).on(Metro.events.stopAll, function(){
+
                 element.css({
                     cursor: that.backup.cursor,
                     zIndex: that.backup.zIndex
@@ -152,6 +156,9 @@ var Draggable = {
 
                 that.drag = false;
                 that.move = false;
+
+                document.body.onselectstart = that.onselectstart;
+                document.ondragstart = that.ondragstart;
 
                 Utils.exec(o.onDragStop, [position], elem);
                 element.fire("dragstop", {

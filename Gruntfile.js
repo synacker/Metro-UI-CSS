@@ -75,10 +75,7 @@ module.exports = function(grunt) {
                 options: {
                     stripBanners: true,
                     separator: "\n\n",
-                    banner: '<%= banner %>',
-                    process: function(src, filePath){
-                        return '// Source: ' + filePath + '\n\n' + src;
-                    }
+                    banner: '<%= banner %>'
                 },
                 src: [
                     'build/css/metro.css',

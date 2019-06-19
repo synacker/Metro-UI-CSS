@@ -3485,7 +3485,7 @@ var isTouch = (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (
 var Metro = {
 
     version: "4.3.0",
-    compileTime: "18/06/2019 11:56:29",
+    compileTime: "19/06/2019 17:09:53",
     buildNumber: "726",
     isTouchable: isTouch,
     fullScreenEnabled: document.fullscreenEnabled,
@@ -13377,7 +13377,79 @@ Metro.plugin('donut', Donut);
 
 // Source: source/components/draggable/drag-items.js
 
+var DragItemsDefaultConfig = {
+    dragItem: 'li',
+    dropTo: "parent",
+    dragMode: "clone",
+    onCanDrag: Metro.noop_true,
+    onDragStart: Metro.noop,
+    onDragStop: Metro.noop,
+    onDragMove: Metro.noop,
+    onDragItemsCreate: Metro.noop
+};
 
+Metro.dragItemsSetup = function (options) {
+    DragItemsDefaultConfig = $.extend({}, DragItemsDefaultConfig, options);
+};
+
+if (typeof window["metroDragItemsSetup"] !== undefined) {
+    Metro.dragItemsSetup(window["metroDragItemsSetup"]);
+}
+
+var DragItems = {
+    init: function( options, elem ) {
+        this.options = $.extend( {}, DragItemsDefaultConfig, options );
+        this.elem  = elem;
+        this.element = $(elem);
+        this.avatar = null;
+
+        this._setOptionsFromDOM();
+        this._create();
+
+        return this;
+    },
+
+    _setOptionsFromDOM: function(){
+        var that = this, element = this.element, o = this.options;
+
+        $.each(element.data(), function(key, value){
+            if (key in o) {
+                try {
+                    o[key] = JSON.parse(value);
+                } catch (e) {
+                    o[key] = value;
+                }
+            }
+        });
+    },
+
+    _create: function(){
+        var that = this, element = this.element, o = this.options;
+
+        this._createStructure();
+        this._createEvents();
+
+        Utils.exec(o.onCreate, [element]);
+    },
+
+    _createStructure: function(){
+        var that = this, element = this.element, o = this.options;
+
+    },
+
+    _createEvents: function(){
+        var that = this, element = this.element, o = this.options;
+
+    },
+
+    changeAttribute: function(attributeName){
+
+    },
+
+    destroy: function(){}
+};
+
+Metro.plugin('dragitems', DragItems);
 
 // Source: source/components/draggable/draggable.js
 
@@ -13395,8 +13467,8 @@ Metro.draggableSetup = function (options) {
     DraggableDefaultConfig = $.extend({}, DraggableDefaultConfig, options);
 };
 
-if (typeof window.metroDraggableSetup !== undefined) {
-    Metro.draggableSetup(window.metroDraggableSetup);
+if (typeof window["metroDraggableSetup"] !== undefined) {
+    Metro.draggableSetup(window["metroDraggableSetup"]);
 }
 
 var Draggable = {
@@ -13411,6 +13483,8 @@ var Draggable = {
             zIndex: '0'
         };
         this.dragArea = null;
+        this.onselectstart = null;
+        this.ondragstart = null;
 
         this._setOptionsFromDOM();
         this._create();
@@ -13443,8 +13517,6 @@ var Draggable = {
             y: 0
         };
         var dragElement  = o.dragElement !== 'self' ? element.find(o.dragElement) : element;
-
-        dragElement[0].ondragstart = function(){return false;};
 
         element.css("position", "absolute");
 
@@ -13489,6 +13561,10 @@ var Draggable = {
                 });
             };
 
+            that.onselectstart = document.body.onselectstart;
+            that.ondragstart = document.ondragstart;
+            document.body.onselectstart = Metro.noop_false;
+            document.body.ondragstart = Metro.noop_false;
 
             if (element.data("canDrag") === false || Utils.exec(o.onCanDrag, [element]) !== true) {
                 return ;
@@ -13519,10 +13595,10 @@ var Draggable = {
                 element.fire("dragmove", {
                     position: position
                 });
-                //e.preventDefault();
             });
 
             $(document).on(Metro.events.stopAll, function(){
+
                 element.css({
                     cursor: that.backup.cursor,
                     zIndex: that.backup.zIndex
@@ -13535,6 +13611,9 @@ var Draggable = {
 
                 that.drag = false;
                 that.move = false;
+
+                document.body.onselectstart = that.onselectstart;
+                document.ondragstart = that.ondragstart;
 
                 Utils.exec(o.onDragStop, [position], elem);
                 element.fire("dragstop", {
