@@ -16,8 +16,8 @@ Metro.treeViewSetup = function (options) {
     TreeViewDefaultConfig = $.extend({}, TreeViewDefaultConfig, options);
 };
 
-if (typeof window.metroTreeViewSetup !== undefined) {
-    Metro.treeViewSetup(window.metroTreeViewSetup);
+if (typeof window["metroTreeViewSetup"] !== undefined) {
+    Metro.treeViewSetup(window["metroTreeViewSetup"]);
 }
 
 var TreeView = {
@@ -142,7 +142,7 @@ var TreeView = {
 
             that.toggleNode(node);
 
-            e.preventDefault();
+            e.stop();
         });
 
         element.on(Metro.events.click, "li > .caption", function(e){

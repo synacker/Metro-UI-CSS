@@ -481,7 +481,7 @@ function parseUnit(str, out) {
 
 // Source: src/core.js
 
-var m4qVersion = "v1.0.0. Built at 18/06/2019 11:54:09";
+var m4qVersion = "v1.0.0. Built at 05/07/2019 20:36:42";
 var regexpSingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
 
 var matches = Element.prototype.matches
@@ -610,13 +610,28 @@ $.extend({
 
 $.fn.extend({
     index: function(sel){
-        var el, _index = undefined;
+        var el, _index = -1;
 
         if (this.length === 0) {
-            return -1;
+            return _index;
         }
 
-        el = not(sel) ? this[0] : $(sel)[0];
+        el = not(sel) || typeof sel !== "string" ? this[0] : $(sel)[0];
+
+        if (not(sel)) {
+            el = this[0];
+        } else if (sel instanceof $ && sel.length > 0) {
+            el = sel[0];
+        } else if (typeof sel === "string") {
+            el = $(sel)[0];
+        } else {
+            el = undefined;
+        }
+
+        if (not(el)) {
+            return _index;
+        }
+
         $.each(el.parentNode.children, function(i){
             if (this === el) {
                 _index = i;
@@ -1520,7 +1535,7 @@ $.fn.extend({
                             if (matches.call(target, sel)) {
                                 handler.call(target, e);
                                 if (e.isPropagationStopped) {
-                                    e.stop(true);
+                                    break;
                                 }
                             }
                             target = target.parentNode;
@@ -1871,26 +1886,39 @@ $.fn.extend({
 
 // Source: src/css.js
 
-//var nonDigit = /[^0-9.\-]/;
 var numProps = ['opacity', 'zIndex'];
 
 $.fn.extend({
+
+    _getStyle: function(el, prop, pseudo){
+        return ["scrollLeft", "scrollTop"].indexOf(prop) > -1 ? $(el)[prop]() : getComputedStyle(el, pseudo)[prop];
+    },
+
     style: function(name, pseudo){
+        var that = this, el;
+
+        if (typeof name === 'string' && this.length === 0) {
+            return undefined;
+        }
+
         if (this.length === 0) {
             return this;
         }
-        var el = this[0];
-        if (not(name)) {
+
+        el = this[0];
+
+        if (not(name) || name === "all") {
             return getComputedStyle(el, pseudo);
         } else {
             var result = {}, names = name.split(", ").map(function(el){
                 return (""+el).trim();
             });
             if (names.length === 1)  {
-                return ["scrollLeft", "scrollTop"].indexOf(names[0]) > -1 ? $(el)[names[0]]() : getComputedStyle(el, pseudo)[names[0]];
+                return this._getStyle(el, names[0], pseudo);
             } else {
                 $.each(names, function () {
-                    result[this] = ["scrollLeft", "scrollTop"].indexOf(this) > -1 ? $(el)[this]() : getComputedStyle(el, pseudo)[this];
+                    var prop = this;
+                    result[this] = that._getStyle(el, prop, pseudo);
                 });
                 return result;
             }
@@ -1898,26 +1926,24 @@ $.fn.extend({
     },
 
     removeStyleProperty: function(name){
-        var that = this;
-        if (not(name) || this.length === 0) return ;
+        if (not(name) || this.length === 0) return this;
         var names = name.split(", ").map(function(el){
             return (""+el).trim();
         });
-        $.each(names, function(){
-            var prop = this;
-            that.each(function(){
-                var el = this;
-                el.style.removeProperty(prop);
-            })
+
+        return this.each(function(){
+            var el = this;
+            $.each(names, function(){
+                el.style.removeProperty(this);
+            });
         });
     },
 
     css: function(o, v){
-        if (this.length === 0) {
-            return this;
-        }
 
-        if (not(o) || (typeof o === "string" && not(v))) {
+        o = o || 'all';
+
+        if (typeof o === "string" && not(v)) {
             return  this.style(o);
         }
 
@@ -1978,11 +2004,22 @@ $.fn.extend({
 
     hasClass: function(cls){
         var result = false;
+        var classes = cls.split(" ").filter(function(v){
+            return (""+v).trim() !== "";
+        });
+
+        if (not(cls)) {
+            return false;
+        }
 
         this.each(function(){
-            if (this.classList.contains(cls)) {
-                result = true;
-            }
+            var el = this;
+
+            $.each(classes, function(){
+                if (!result && el.classList && el.classList.contains(this)) {
+                    result = true;
+                }
+            });
         });
 
         return result;
@@ -1992,18 +2029,22 @@ $.fn.extend({
         return this.each(function(){
             this.className = "";
         });
+    },
+
+    cls: function(){
+        return this.length === 0 ? undefined : this[0].className;
     }
 });
 
 ['add', 'remove', 'toggle'].forEach(function (method) {
     $.fn[method + "Class"] = function(cls){
-        if (!cls || (""+cls).trim() === "") return this;
+        if (not(cls) || (""+cls).trim() === "") return this;
         return this.each(function(){
             var el = this;
             $.each(cls.split(" ").filter(function(v){
                 return (""+v).trim() !== "";
             }), function(){
-                el.classList[method](this);
+                if (el.classList) el.classList[method](this);
             });
         });
     }
@@ -2256,39 +2297,32 @@ $.fn.extend({
     attr: function(name, val){
         var attributes = {};
 
-        if (this.length === 0) {
-            return ;
+        if (this.length === 0 && arguments.length === 0) {
+            return undefined;
         }
 
-        if (arguments.length === 0) {
+        if (this.length && arguments.length === 0) {
             $.each(this[0].attributes, function(){
                 attributes[this.nodeName] = this.nodeValue;
             });
             return attributes;
         }
 
-        if (not(name)) {
-            return name;
-        }
-
         if (typeof name === 'string' && val === undefined) {
-            return this[0].nodeType === 1 && this[0].hasAttribute(name) ? this[0].getAttribute(name) : undefined;
+            return this.length && this[0].nodeType === 1 && this[0].hasAttribute(name) ? this[0].getAttribute(name) : undefined;
         }
 
-        if (isPlainObject(name)) {
-            this.each(function(){
-                for (var key in name) {
-                    if (name.hasOwnProperty(key))
-                        this.setAttribute(key, name[key]);
-                }
-            });
-        } else {
-            this.each(function(){
-                this.setAttribute(name, val);
-            });
-        }
-
-        return this;
+        return this.each(function(){
+            var el = this;
+            if (isPlainObject(name)) {
+                $.each(name, function(k, v){
+                    el.setAttribute(k, v);
+                });
+            } else {
+                el.setAttribute(name, val);
+                console.log(name, val);
+            }
+        });
     },
 
     removeAttr: function(name){
@@ -2297,8 +2331,8 @@ $.fn.extend({
         if (not(name)) {
             return this.each(function(){
                 var el = this;
-                $.each($(el).attr(), function(key){
-                    el.removeAttribute(key);
+                $.each(this.attributes, function(){
+                    el.removeAttribute(this);
                 })
             });
         }
@@ -2316,9 +2350,6 @@ $.fn.extend({
     },
 
     toggleAttr: function(name, val){
-
-        if (not(name)) return ;
-
         return this.each(function(){
             var el = this;
 
@@ -2332,13 +2363,17 @@ $.fn.extend({
     },
 
     id: function(val){
-        return $(this[0]).attr("id", val);
+        return this.length ? $(this[0]).attr("id", val) : undefined;
     }
 });
 
 $.extend({
     meta: function(name){
         return not(name) ? $("meta") : $("meta[name='$name']".replace("$name", name));
+    },
+
+    metaBy: function(name){
+        return not(name) ? $("meta") : $("meta[$name]".replace("$name", name));
     },
 
     doctype: function(){
@@ -3349,15 +3384,12 @@ m4q.global = function(){
     global.$ = $;
 };
 
-m4q.noConflict = function(deep) {
+m4q.noConflict = function() {
     if ( global.$ === $ ) {
         global.$ = _$;
     }
 
-    if (deep && global.m4q === $) {
-        global.m4q = _m4q;
-    }
-
     return $;
 };
+
 }(window));

@@ -116,7 +116,7 @@ var Tile = {
         if (o.effect === "image-set") {
             element.addClass("image-set");
 
-            $.each(element.children("img"), function(i){
+            $.each(element.children("img"), function(){
                 that.images.push(this);
                 $(this).remove();
             });
@@ -193,7 +193,7 @@ var Tile = {
     },
 
     _createEvents: function(){
-        var that = this, element = this.element, o = this.options;
+        var element = this.element, o = this.options;
 
         element.on(Metro.events.start, function(e){
             var tile = $(this);
@@ -202,31 +202,30 @@ var Tile = {
                 Y = Utils.pageXY(e).y - tile.offset().top;
             var side;
 
-            if (Utils.isRightMouse(e) === false) {
+            if (Utils.isRightMouse(e)) {return;}
 
-                if (X < dim.w * 1 / 3 && (Y < dim.h * 1 / 2 || Y > dim.h * 1 / 2)) {
-                    side = 'left';
-                } else if (X > dim.w * 2 / 3 && (Y < dim.h * 1 / 2 || Y > dim.h * 1 / 2)) {
-                    side = 'right';
-                } else if (X > dim.w * 1 / 3 && X < dim.w * 2 / 3 && Y > dim.h / 2) {
-                    side = 'bottom';
-                } else {
-                    side = "top";
-                }
-
-                if (o.canTransform === true) tile.addClass("transform-" + side);
-
-                if (o.target !== null) {
-                    setTimeout(function(){
-                        document.location.href = o.target;
-                    }, 100);
-                }
-
-                Utils.exec(o.onClick, [side], element[0]);
-                element.fire("click", {
-                    side: side
-                });
+            if (X < dim.w / 3 && (Y < dim.h / 2 || Y > dim.h / 2)) {
+                side = 'left';
+            } else if (X > dim.w * 2 / 3 && (Y < dim.h / 2 || Y > dim.h / 2)) {
+                side = 'right';
+            } else if (X > dim.w / 3 && X < dim.w * 2 / 3 && Y > dim.h / 2) {
+                side = 'bottom';
+            } else {
+                side = "top";
             }
+
+            if (o.canTransform === true) tile.addClass("transform-" + side);
+
+            if (o.target !== null) {
+                setTimeout(function(){
+                    document.location.href = o.target;
+                }, 100);
+            }
+
+            Utils.exec(o.onClick, [side], element[0]);
+            element.fire("click", {
+                side: side
+            });
         });
 
         element.on([Metro.events.stop, Metro.events.leave].join(" "), function(){

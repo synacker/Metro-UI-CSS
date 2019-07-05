@@ -1,4 +1,4 @@
-import metro4 from '../../build/js/metro';
+import '../../build/js/metro';
 const Utils = Metro.utils;
 
 describe("Test Metro 4 Utils functions", function(){

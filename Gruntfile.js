@@ -28,7 +28,9 @@ module.exports = function(grunt) {
         tasks.push('watch');
     }
 
-    require('load-grunt-tasks')(grunt);
+    require('jit-grunt')(grunt);
+    require('time-grunt')(grunt);
+    // require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
         docsDir: 'G:\\Projects\\Metro4-Docs\\public_html\\metro',
@@ -224,9 +226,6 @@ module.exports = function(grunt) {
         },
 
         concurrent: {
-            options: {
-                limit: 8
-            },
             clean: ['clean'],
             compile_less: ['less:src', 'less:schemes', 'less:docs'],
             postcss: ['postcss'],
@@ -245,7 +244,6 @@ module.exports = function(grunt) {
         }
     });
 
-    // grunt.registerTask('default', tasks);
     grunt.registerTask('default', tasks);
 
 };

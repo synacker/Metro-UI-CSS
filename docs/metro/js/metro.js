@@ -498,7 +498,7 @@ function parseUnit(str, out) {
 
 // Source: src/core.js
 
-var m4qVersion = "v1.0.0. Built at 18/06/2019 11:54:09";
+var m4qVersion = "v1.0.0. Built at 05/07/2019 20:36:42";
 var regexpSingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
 
 var matches = Element.prototype.matches
@@ -627,13 +627,28 @@ $.extend({
 
 $.fn.extend({
     index: function(sel){
-        var el, _index = undefined;
+        var el, _index = -1;
 
         if (this.length === 0) {
-            return -1;
+            return _index;
         }
 
-        el = not(sel) ? this[0] : $(sel)[0];
+        el = not(sel) || typeof sel !== "string" ? this[0] : $(sel)[0];
+
+        if (not(sel)) {
+            el = this[0];
+        } else if (sel instanceof $ && sel.length > 0) {
+            el = sel[0];
+        } else if (typeof sel === "string") {
+            el = $(sel)[0];
+        } else {
+            el = undefined;
+        }
+
+        if (not(el)) {
+            return _index;
+        }
+
         $.each(el.parentNode.children, function(i){
             if (this === el) {
                 _index = i;
@@ -1537,7 +1552,7 @@ $.fn.extend({
                             if (matches.call(target, sel)) {
                                 handler.call(target, e);
                                 if (e.isPropagationStopped) {
-                                    e.stop(true);
+                                    break;
                                 }
                             }
                             target = target.parentNode;
@@ -1888,26 +1903,39 @@ $.fn.extend({
 
 // Source: src/css.js
 
-//var nonDigit = /[^0-9.\-]/;
 var numProps = ['opacity', 'zIndex'];
 
 $.fn.extend({
+
+    _getStyle: function(el, prop, pseudo){
+        return ["scrollLeft", "scrollTop"].indexOf(prop) > -1 ? $(el)[prop]() : getComputedStyle(el, pseudo)[prop];
+    },
+
     style: function(name, pseudo){
+        var that = this, el;
+
+        if (typeof name === 'string' && this.length === 0) {
+            return undefined;
+        }
+
         if (this.length === 0) {
             return this;
         }
-        var el = this[0];
-        if (not(name)) {
+
+        el = this[0];
+
+        if (not(name) || name === "all") {
             return getComputedStyle(el, pseudo);
         } else {
             var result = {}, names = name.split(", ").map(function(el){
                 return (""+el).trim();
             });
             if (names.length === 1)  {
-                return ["scrollLeft", "scrollTop"].indexOf(names[0]) > -1 ? $(el)[names[0]]() : getComputedStyle(el, pseudo)[names[0]];
+                return this._getStyle(el, names[0], pseudo);
             } else {
                 $.each(names, function () {
-                    result[this] = ["scrollLeft", "scrollTop"].indexOf(this) > -1 ? $(el)[this]() : getComputedStyle(el, pseudo)[this];
+                    var prop = this;
+                    result[this] = that._getStyle(el, prop, pseudo);
                 });
                 return result;
             }
@@ -1915,26 +1943,24 @@ $.fn.extend({
     },
 
     removeStyleProperty: function(name){
-        var that = this;
-        if (not(name) || this.length === 0) return ;
+        if (not(name) || this.length === 0) return this;
         var names = name.split(", ").map(function(el){
             return (""+el).trim();
         });
-        $.each(names, function(){
-            var prop = this;
-            that.each(function(){
-                var el = this;
-                el.style.removeProperty(prop);
-            })
+
+        return this.each(function(){
+            var el = this;
+            $.each(names, function(){
+                el.style.removeProperty(this);
+            });
         });
     },
 
     css: function(o, v){
-        if (this.length === 0) {
-            return this;
-        }
 
-        if (not(o) || (typeof o === "string" && not(v))) {
+        o = o || 'all';
+
+        if (typeof o === "string" && not(v)) {
             return  this.style(o);
         }
 
@@ -1995,11 +2021,22 @@ $.fn.extend({
 
     hasClass: function(cls){
         var result = false;
+        var classes = cls.split(" ").filter(function(v){
+            return (""+v).trim() !== "";
+        });
+
+        if (not(cls)) {
+            return false;
+        }
 
         this.each(function(){
-            if (this.classList.contains(cls)) {
-                result = true;
-            }
+            var el = this;
+
+            $.each(classes, function(){
+                if (!result && el.classList && el.classList.contains(this)) {
+                    result = true;
+                }
+            });
         });
 
         return result;
@@ -2009,18 +2046,22 @@ $.fn.extend({
         return this.each(function(){
             this.className = "";
         });
+    },
+
+    cls: function(){
+        return this.length === 0 ? undefined : this[0].className;
     }
 });
 
 ['add', 'remove', 'toggle'].forEach(function (method) {
     $.fn[method + "Class"] = function(cls){
-        if (!cls || (""+cls).trim() === "") return this;
+        if (not(cls) || (""+cls).trim() === "") return this;
         return this.each(function(){
             var el = this;
             $.each(cls.split(" ").filter(function(v){
                 return (""+v).trim() !== "";
             }), function(){
-                el.classList[method](this);
+                if (el.classList) el.classList[method](this);
             });
         });
     }
@@ -2273,39 +2314,32 @@ $.fn.extend({
     attr: function(name, val){
         var attributes = {};
 
-        if (this.length === 0) {
-            return ;
+        if (this.length === 0 && arguments.length === 0) {
+            return undefined;
         }
 
-        if (arguments.length === 0) {
+        if (this.length && arguments.length === 0) {
             $.each(this[0].attributes, function(){
                 attributes[this.nodeName] = this.nodeValue;
             });
             return attributes;
         }
 
-        if (not(name)) {
-            return name;
-        }
-
         if (typeof name === 'string' && val === undefined) {
-            return this[0].nodeType === 1 && this[0].hasAttribute(name) ? this[0].getAttribute(name) : undefined;
+            return this.length && this[0].nodeType === 1 && this[0].hasAttribute(name) ? this[0].getAttribute(name) : undefined;
         }
 
-        if (isPlainObject(name)) {
-            this.each(function(){
-                for (var key in name) {
-                    if (name.hasOwnProperty(key))
-                        this.setAttribute(key, name[key]);
-                }
-            });
-        } else {
-            this.each(function(){
-                this.setAttribute(name, val);
-            });
-        }
-
-        return this;
+        return this.each(function(){
+            var el = this;
+            if (isPlainObject(name)) {
+                $.each(name, function(k, v){
+                    el.setAttribute(k, v);
+                });
+            } else {
+                el.setAttribute(name, val);
+                console.log(name, val);
+            }
+        });
     },
 
     removeAttr: function(name){
@@ -2314,8 +2348,8 @@ $.fn.extend({
         if (not(name)) {
             return this.each(function(){
                 var el = this;
-                $.each($(el).attr(), function(key){
-                    el.removeAttribute(key);
+                $.each(this.attributes, function(){
+                    el.removeAttribute(this);
                 })
             });
         }
@@ -2333,9 +2367,6 @@ $.fn.extend({
     },
 
     toggleAttr: function(name, val){
-
-        if (not(name)) return ;
-
         return this.each(function(){
             var el = this;
 
@@ -2349,13 +2380,17 @@ $.fn.extend({
     },
 
     id: function(val){
-        return $(this[0]).attr("id", val);
+        return this.length ? $(this[0]).attr("id", val) : undefined;
     }
 });
 
 $.extend({
     meta: function(name){
         return not(name) ? $("meta") : $("meta[name='$name']".replace("$name", name));
+    },
+
+    metaBy: function(name){
+        return not(name) ? $("meta") : $("meta[$name]".replace("$name", name));
     },
 
     doctype: function(){
@@ -3366,17 +3401,14 @@ m4q.global = function(){
     global.$ = $;
 };
 
-m4q.noConflict = function(deep) {
+m4q.noConflict = function() {
     if ( global.$ === $ ) {
         global.$ = _$;
     }
 
-    if (deep && global.m4q === $) {
-        global.m4q = _m4q;
-    }
-
     return $;
 };
+
 }(window));
 
 
@@ -3485,7 +3517,7 @@ var isTouch = (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (
 var Metro = {
 
     version: "4.3.0",
-    compileTime: "19/06/2019 17:09:53",
+    compileTime: "05/07/2019 20:38:41",
     buildNumber: "726",
     isTouchable: isTouch,
     fullScreenEnabled: document.fullscreenEnabled,
@@ -13375,11 +13407,11 @@ var Donut = {
 
 Metro.plugin('donut', Donut);
 
-// Source: source/components/draggable/drag-items.js
+// Source: source/components/drag-items/drag-items.js
 
 var DragItemsDefaultConfig = {
     dragItem: 'li',
-    dropTo: "parent",
+    dropTargets: null,
     dragMode: "clone",
     onCanDrag: Metro.noop_true,
     onDragStart: Metro.noop,
@@ -13402,6 +13434,8 @@ var DragItems = {
         this.elem  = elem;
         this.element = $(elem);
         this.avatar = null;
+        this.dragItem = null;
+        this.dropTargets = [elem];
 
         this._setOptionsFromDOM();
         this._create();
@@ -13440,6 +13474,122 @@ var DragItems = {
     _createEvents: function(){
         var that = this, element = this.element, o = this.options;
 
+        element.on(Metro.events.startAll, o.dragItem, function(e_start){
+            var offset, onselectstart, ondragstart;
+            var width, height, shift = {
+                top: 0, left: 0
+            };
+
+            var disableSelect = function(){
+                onselectstart = document.body.onselectstart;
+                ondragstart = document.ondragstart;
+            };
+            var enableSelect = function(){
+                document.body.onselectstart = onselectstart;
+                document.ondragstart = ondragstart;
+            };
+
+            var moveElement = function(e, el){
+                var top = Utils.pageXY(e).y - shift.top;
+                var left = Utils.pageXY(e).x - shift.left;
+                var side;
+                var elementFromPoint;
+
+                el.css({
+                    left: left,
+                    top: top
+                });
+
+                elementFromPoint = document.elementsFromPoint(Utils.pageXY(e).x, Utils.pageXY(e).y).filter(function(elementFromPoint){
+                    // return (el[0].parentElement === elementFromPoint.parentElement) && !$(elementFromPoint).hasClass("dragged-item");
+                    return ($(elementFromPoint).parent().hasClass('drag-items-target')) && !$(elementFromPoint).hasClass("dragged-item");
+                })[0];
+
+                if (!Utils.isValue(elementFromPoint)) {
+
+                    elementFromPoint = document.elementsFromPoint(Utils.pageXY(e).x, Utils.pageXY(e).y).filter(function(elementFromPoint){
+                        return $(elementFromPoint).hasClass('drag-items-target');
+                    })[0];
+
+                    that.avatar.appendTo(elementFromPoint);
+
+                } else {
+                    var $el = $(elementFromPoint);
+                    var $el_offset = $el.offset();
+                    var Y = Utils.pageXY(e).y - $el_offset.top;
+                    var dim = {w: $el.width(), h: $el.height()};
+
+                    if (Y > dim.h / 2) {
+                        side = 'bottom';
+                    } else {
+                        side = "top";
+                    }
+
+                    // console.log(side);
+
+                    if (side === 'top') {
+                        if (that.avatar.next()[0] !== elementFromPoint) {
+                            that.avatar.insertBefore(elementFromPoint);
+                        }
+                    }
+                    if (side === 'bottom') {
+                        if (that.avatar.prev()[0] !== elementFromPoint) {
+                            that.avatar.insertAfter(elementFromPoint);
+                        }
+                    }
+                }
+
+            };
+
+            if (Utils.isRightMouse(e_start)) {
+                return ;
+            }
+
+            disableSelect();
+
+            that.dragItem = $(this);
+
+            offset = that.dragItem.offset();
+
+            shift.top = Utils.pageXY(e_start).y - offset.top;
+            shift.left = Utils.pageXY(e_start).x - offset.left;
+
+            width = that.dragItem.width();
+            height = that.dragItem.height();
+
+            that.avatar = $(that.dragItem).clone(true).addClass("dragged-item-avatar").insertBefore(that.dragItem);
+
+            that.dragItem.css({
+                top: offset.top,
+                left: offset.left,
+                position: "absolute",
+                width: width,
+                height: height,
+                zIndex: 1000
+            }).addClass("dragged-item").appendTo("body");
+
+            $(document).on(Metro.events.moveAll, function(e_move){
+                e_move.preventDefault();
+                moveElement(e_move, that.dragItem);
+            });
+
+            $(document).on(Metro.events.stopAll, function(e_stop){
+
+                enableSelect();
+
+                $(document).off(Metro.events.moveAll);
+                $(document).off(Metro.events.stopAll);
+
+                that.dragItem.insertBefore(that.avatar).removeClass("dragged-item").removeStyleProperty("top, left, position, width, height, z-index");
+
+                that.avatar.remove();
+                that.avatar = null;
+                that.mouseOffset = null;
+                that.dragItem = null;
+            });
+
+            e_start.stop();
+        })
     },
 
     changeAttribute: function(attributeName){
@@ -26417,7 +26567,7 @@ var Tile = {
         if (o.effect === "image-set") {
             element.addClass("image-set");
 
-            $.each(element.children("img"), function(i){
+            $.each(element.children("img"), function(){
                 that.images.push(this);
                 $(this).remove();
             });
@@ -26494,7 +26644,7 @@ var Tile = {
     },
 
     _createEvents: function(){
-        var that = this, element = this.element, o = this.options;
+        var element = this.element, o = this.options;
 
         element.on(Metro.events.start, function(e){
             var tile = $(this);
@@ -26503,31 +26653,30 @@ var Tile = {
                 Y = Utils.pageXY(e).y - tile.offset().top;
             var side;
 
-            if (Utils.isRightMouse(e) === false) {
+            if (Utils.isRightMouse(e)) {return;}
 
-                if (X < dim.w * 1 / 3 && (Y < dim.h * 1 / 2 || Y > dim.h * 1 / 2)) {
-                    side = 'left';
-                } else if (X > dim.w * 2 / 3 && (Y < dim.h * 1 / 2 || Y > dim.h * 1 / 2)) {
-                    side = 'right';
-                } else if (X > dim.w * 1 / 3 && X < dim.w * 2 / 3 && Y > dim.h / 2) {
-                    side = 'bottom';
-                } else {
-                    side = "top";
-                }
-
-                if (o.canTransform === true) tile.addClass("transform-" + side);
-
-                if (o.target !== null) {
-                    setTimeout(function(){
-                        document.location.href = o.target;
-                    }, 100);
-                }
-
-                Utils.exec(o.onClick, [side], element[0]);
-                element.fire("click", {
-                    side: side
-                });
+            if (X < dim.w / 3 && (Y < dim.h / 2 || Y > dim.h / 2)) {
+                side = 'left';
+            } else if (X > dim.w * 2 / 3 && (Y < dim.h / 2 || Y > dim.h / 2)) {
+                side = 'right';
+            } else if (X > dim.w / 3 && X < dim.w * 2 / 3 && Y > dim.h / 2) {
+                side = 'bottom';
+            } else {
+                side = "top";
             }
+
+            if (o.canTransform === true) tile.addClass("transform-" + side);
+
+            if (o.target !== null) {
+                setTimeout(function(){
+                    document.location.href = o.target;
+                }, 100);
+            }
+
+            Utils.exec(o.onClick, [side], element[0]);
+            element.fire("click", {
+                side: side
+            });
         });
 
         element.on([Metro.events.stop, Metro.events.leave].join(" "), function(){
@@ -28295,8 +28444,8 @@ Metro.treeViewSetup = function (options) {
     TreeViewDefaultConfig = $.extend({}, TreeViewDefaultConfig, options);
 };
 
-if (typeof window.metroTreeViewSetup !== undefined) {
-    Metro.treeViewSetup(window.metroTreeViewSetup);
+if (typeof window["metroTreeViewSetup"] !== undefined) {
+    Metro.treeViewSetup(window["metroTreeViewSetup"]);
 }
 
 var TreeView = {
@@ -28421,7 +28570,7 @@ var TreeView = {
 
             that.toggleNode(node);
 
-            e.preventDefault();
+            e.stop();
         });
 
         element.on(Metro.events.click, "li > .caption", function(e){

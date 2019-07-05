@@ -1,0 +1,19 @@
+@import (once) "../../include/vars";
+@import (once) "../../include/mixins";
+
+.drag-items-target {
+    //min-height: 50px;
+}
+
+.dragged-item {
+    background-color: @white;
+    cursor: pointer;
+    opacity: .3;
+    list-style: none inside;
+    text-indent: -1000em;
+    .shadow(1);
+}
+
+.dragged-item-avatar {
+    box-shadow: inset -1px 0px 10px -4px rgba(red(@primaryColor),green(@primaryColor),blue(@primaryColor),1);
+}
