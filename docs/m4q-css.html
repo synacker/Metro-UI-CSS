@@ -53,6 +53,7 @@
                     <li class="toc-entry"><a href="#_func_toggle_class">toggleClass()</a></li>
                     <li class="toc-entry"><a href="#_func_has_class">hasClass()</a></li>
                     <li class="toc-entry"><a href="#_func_clear_classes">clearClasses()</a></li>
+                    <li class="toc-entry"><a href="#_func_cls">cls()</a></li>
                 </ul>
 
             </div>
@@ -148,6 +149,18 @@
                 </code></pre>
                 <pre><code>
                     $( "#mydiv" ).clearClasses(); // Outputs &lt;div id="mydiv" class&gt;&lt;/div&gt;
+                </code></pre>
+
+                <h3 id="_func_cls">cls()</h3>
+                <p>
+                    Return element classes
+                </p>
+                <pre><code>
+                    &lt;div id="mydiv" class="foo bar"&gt;&lt;/div&gt;
+                </code></pre>
+                <pre><code>
+                    $( "#mydiv" ).cls(); // Outputs "foo bar"
+                    $( "#mydiv" ).cls(true); // Outputs ["foo", "bar"]
                 </code></pre>
 
             </main>

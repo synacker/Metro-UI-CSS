@@ -498,7 +498,7 @@ function parseUnit(str, out) {
 
 // Source: src/core.js
 
-var m4qVersion = "v1.0.0. Built at 05/07/2019 20:36:42";
+var m4qVersion = "v1.0.0. Built at 07/07/2019 18:17:28";
 var regexpSingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
 
 var matches = Element.prototype.matches
@@ -633,8 +633,6 @@ $.fn.extend({
             return _index;
         }
 
-        el = not(sel) || typeof sel !== "string" ? this[0] : $(sel)[0];
-
         if (not(sel)) {
             el = this[0];
         } else if (sel instanceof $ && sel.length > 0) {
@@ -649,7 +647,7 @@ $.fn.extend({
             return _index;
         }
 
-        $.each(el.parentNode.children, function(i){
+        if (el && el.parentNode) $.each(el.parentNode.children, function(i){
             if (this === el) {
                 _index = i;
             }
@@ -665,18 +663,14 @@ $.fn.extend({
     },
 
     eq: function(i){
-        return $(this.get(i >= 0 ? i : this.length + i));
-    },
-
-    contains: function(s){
-        return this.find(s).length > 0;
+        return !not(i) && this.length > 0 ? $.extend($(this.get(i)), {_prevObj: this}) : this;
     },
 
     is: function(s){
         var result = false;
 
         if (this.length === 0) {
-            return ;
+            return false;
         }
 
         if (s instanceof $) {
@@ -684,16 +678,28 @@ $.fn.extend({
         }
 
         if (s === ":selected") {
-            return this[0].selected;
+            this.each(function(){
+                if (this.selected) result = true;
+            });
         } else
 
         if (s === ":checked") {
-            return this[0].checked;
+            this.each(function(){
+                if (this.checked) result = true;
+            });
         } else
 
         if (s === ":hidden") {
-            var styles = getComputedStyle(this[0]);
-            return this[0].hidden || styles['display'] === 'none' || styles['visibility'] === 'hidden' || parseInt(styles['opacity']) === 0;
+            this.each(function(){
+                var styles = getComputedStyle(this);
+                if (
+                    this.getAttribute('type') === 'hidden'
+                    || this.hidden
+                    || styles['display'] === 'none'
+                    || styles['visibility'] === 'hidden'
+                    || parseInt(styles['opacity']) === 0
+                ) result = true;
+            });
         } else
 
         if (typeof  s === "string" && [':selected'].indexOf(s) === -1) {
@@ -729,12 +735,19 @@ $.fn.extend({
 
     same: function(o){
         var result = true;
-        if (!o instanceof $ || this.length !== o.length) return false;
+
+        if (!(o instanceof $)) {
+            o = $(o);
+        }
+
+        if (this.length !== o.length) return false;
+
         this.each(function(){
             if (o.items().indexOf(this) === -1) {
                 result = false;
             }
         });
+
         return result;
     },
 
@@ -747,15 +760,17 @@ $.fn.extend({
     },
 
     odd: function(){
-        return this.filter(function(el, i){
+        var result = this.filter(function(el, i){
             return i % 2 === 0;
         });
+        return $.extend(result, {_prevObj: this});
     },
 
     even: function(){
-        return this.filter(function(el, i){
+        var result = this.filter(function(el, i){
             return i % 2 !== 0;
         });
+        return $.extend(result, {_prevObj: this});
     },
 
     filter: function(fn){
@@ -765,27 +780,34 @@ $.fn.extend({
                 return matches.call(el, sel);
             };
         }
-        return $.merge($(), [].filter.call(this, fn));
+
+        return $.extend($.merge($(), [].filter.call(this, fn)), {_prevObj: this});
     },
 
     find: function(s){
-        var res = [], out = $();
+        var res = [], result;
 
         if (s instanceof $) return s;
 
         if (this.length === 0) {
-            return this;
+            result = this;
+        } else {
+            this.each(function () {
+                var el = this;
+                if (typeof el.querySelectorAll !== "undefined") res = res.concat([].slice.call(el.querySelectorAll(s)));
+            });
+            result = $.merge($(), res);
         }
 
-        this.each(function () {
-            var el = this;
-            if (typeof el.querySelectorAll !== "undefined") res = res.concat([].slice.call(el.querySelectorAll(s)));
-        });
-        return $.merge(out, res);
+        return $.extend(result, {_prevObj: this});
+    },
+
+    contains: function(s){
+        return this.find(s).length > 0;
     },
 
     children: function(s){
-        var i, res = [], out = $();
+        var i, res = [];
 
         if (s instanceof $) return s;
 
@@ -799,11 +821,12 @@ $.fn.extend({
         res = s ? res.filter(function(el){
             return matches.call(el, s);
         }) : res;
-        return $.merge(out, res);
+
+        return $.extend($.merge($(), res), {_prevObj: this});
     },
 
     parent: function(s){
-        var res = [], out = $();
+        var res = [];
         if (this.length === 0) {
             return ;
         }
@@ -812,17 +835,18 @@ $.fn.extend({
 
         this.each(function(){
             if (this.parentNode) {
-                res.push(this.parentNode);
+                if (res.indexOf(this.parentNode) === -1) res.push(this.parentNode);
             }
         });
         res = s ? res.filter(function(el){
             return matches.call(el, s);
         }) : res;
-        return $.merge(out, res);
+
+        return $.extend($.merge($(), res), {_prevObj: this});
     },
 
     parents: function(s){
-        var res = [], out = $();
+        var res = [];
 
         if (this.length === 0) {
             return ;
@@ -833,7 +857,7 @@ $.fn.extend({
         this.each(function(){
             var par = this.parentNode;
             while (par) {
-                if (par.nodeType === 1) {
+                if (par.nodeType === 1 && res.indexOf(par) === -1) {
                     if (!not(s)) {
                         if (matches.call(par, s)) {
                             res.push(par);
@@ -846,7 +870,7 @@ $.fn.extend({
             }
         });
 
-        return $.merge(out, res);
+        return $.extend($.merge($(), res), {_prevObj: this});
     },
 
     siblings: function(s){
@@ -873,7 +897,7 @@ $.fn.extend({
             })
         }
 
-        return $.merge($(), res);
+        return $.extend($.merge($(), res), {_prevObj: this});
     },
 
     _siblingAll: function(dir, s){
@@ -900,7 +924,7 @@ $.fn.extend({
             })
         }
 
-        return $.merge($(), res);
+        return $.extend($.merge($(), res), {_prevObj: this});
     },
 
     _sibling: function(dir, s){
@@ -925,7 +949,7 @@ $.fn.extend({
             })
         }
 
-        return $.merge($(), res);
+        return $.extend($.merge($(), res), {_prevObj: this});
     },
 
     prev: function(s){
@@ -969,11 +993,11 @@ $.fn.extend({
             }
         });
 
-        return $.merge($(), res.reverse());
+        return $.extend($.merge($(), res.reverse()), {_prevObj: this});
     },
 
     has: function(selector){
-        var out = $();
+        var res = [];
 
         if (this.length === 0) {
             return ;
@@ -983,13 +1007,26 @@ $.fn.extend({
             var el = $(this);
             var child = el.children(selector);
             if (child.length > 0) {
-                $.merge(out, el);
+                res.push(this);
             }
         });
 
-        return out;
-    }
+        return $.extend($.merge($(), res), {_prevObj: this});
+    },
 
+    back: function(to_start){
+        var ret;
+        if (to_start === true) {
+            ret = this._prevObj;
+            while (ret) {
+                if (!ret._prevObj) break;
+                ret = ret._prevObj;
+            }
+        } else {
+            ret = this._prevObj ? this._prevObj : this;
+        }
+        return ret;
+    }
 });
 
 // Source: src/prop.js
@@ -1069,12 +1106,11 @@ function acceptData(owner){
 }
 
 function getData(data){
-    if (data === "true") return true;
-    if (data === "false") return false;
-    if (data === "null") return null;
-    if (data === +data + "") return +data;
-    if (/^(?:\{[\w\W]*\}|\[[\w\W]*\])$/.test(data)) return JSON.parse(data);
-    return data;
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        return data;
+    }
 }
 
 function dataAttr(elem, key, data){
@@ -1185,11 +1221,9 @@ Data.prototype = {
     }
 };
 
-var dataSet = new Data('Internal');
+var dataSet = new Data('m4q');
 
 $.extend({
-    Data: new Data('m4q'),
-
     hasData: function(elem){
         return dataSet.hasData(elem);
     },
@@ -1203,6 +1237,7 @@ $.extend({
     },
 
     dataSet: function(ns){
+        if (not(ns)) return dataSet;
         if (['INTERNAL', 'M4Q'].indexOf(ns.toUpperCase()) > -1) {
             throw Error("You can not use reserved name for your dataset");
         }
@@ -1268,7 +1303,7 @@ $.fn.extend({
     origin: function(name, value, def){
 
         if (this.length === 0) {
-            return ;
+            return this;
         }
 
         if (not(name) && not(value)) {
@@ -1291,7 +1326,7 @@ $.fn.extend({
 $.extend({
     uniqueId: function () {
         var d = new Date().getTime();
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        return 'm4q-xxxx-xxxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
@@ -1529,7 +1564,7 @@ $.fn.extend({
                 var h, ev = this,
                     event = ev.split("."),
                     name = event[0],
-                    ns = event[1],
+                    ns = options.ns ? options.ns : event[1],
                     index, originEvent;
 
                 h = function(e){
@@ -2048,8 +2083,8 @@ $.fn.extend({
         });
     },
 
-    cls: function(){
-        return this.length === 0 ? undefined : this[0].className;
+    cls: function(array){
+        return this.length === 0 ? undefined : array ? this[0].className.split(" ") : this[0].className;
     }
 });
 
@@ -2414,13 +2449,7 @@ $.extend({
 
 $.extend({
     proxy: function(fn, context){
-        if (typeof fn !== "function") {
-            return ;
-        }
-        if (context === undefined || context === null) {
-            context = this;
-        }
-        return fn.bind(context);
+        return typeof fn !== "function" ? undefined : fn.bind(context);
     }
 });
 
@@ -3517,7 +3546,7 @@ var isTouch = (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (
 var Metro = {
 
     version: "4.3.0",
-    compileTime: "05/07/2019 20:38:41",
+    compileTime: "07/07/2019 18:26:53",
     buildNumber: "726",
     isTouchable: isTouch,
     fullScreenEnabled: document.fullscreenEnabled,
@@ -3836,9 +3865,9 @@ var Metro = {
 
                 var $$ = METRO_JQUERY && typeof jQuery !== 'undefined' ? jQuery : $;
 
-                if ($.fn[func] !== undefined && $this.attr("data-role-"+func) === undefined) {
+                if ($$.fn[func] !== undefined && $this.attr("data-role-"+func) === undefined) {
                     try {
-                        $.fn[func].call($this);
+                        $$.fn[func].call($this);
                         $this.attr("data-role-"+func, true);
 
                         var mc = $this.data('metroComponent');

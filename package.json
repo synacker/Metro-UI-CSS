@@ -27,10 +27,10 @@
   "main": "build/js/metro.js",
   "scripts": {
     "build": "npm install && grunt",
-    "cy:test": "cypress open --config fileServerFolder=docs,baseUrl=http://localhost:8080",
-    "cy:run": "cypress run --config fileServerFolder=docs,baseUrl=http://localhost:8080,video=false",
-    "start": "http-server ./docs -c-1 -s",
-    "test": "start-server-and-test start http://localhost:8080 cy:run"
+    "cy:test": "cypress open --config fileServerFolder=docs,baseUrl=http://localhost:8081",
+    "cy:run": "cypress run --config fileServerFolder=docs,baseUrl=http://localhost:8081,video=false",
+    "start": "http-server ./docs -c-1 -s -p8081",
+    "test": "start-server-and-test start http://localhost:8081 cy:run"
   },
   "devDependencies": {
     "autoprefixer": "^9.6.0",

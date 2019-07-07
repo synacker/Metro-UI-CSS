@@ -420,9 +420,9 @@ var Metro = {
 
                 var $$ = METRO_JQUERY && typeof jQuery !== 'undefined' ? jQuery : $;
 
-                if ($.fn[func] !== undefined && $this.attr("data-role-"+func) === undefined) {
+                if ($$.fn[func] !== undefined && $this.attr("data-role-"+func) === undefined) {
                     try {
-                        $.fn[func].call($this);
+                        $$.fn[func].call($this);
                         $this.attr("data-role-"+func, true);
 
                         var mc = $this.data('metroComponent');
